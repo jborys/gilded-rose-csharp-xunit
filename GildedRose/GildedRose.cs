@@ -4,7 +4,7 @@ namespace GildedRoseKata;
 
 public class GildedRose
 {
-    private readonly IList<Item> Items;
+    IList<Item> Items;
 
     public GildedRose(IList<Item> Items)
     {
@@ -13,69 +13,76 @@ public class GildedRose
 
     public void UpdateQuality()
     {
-        foreach (var item in Items) UpdateItemQuality(item);
-    }
-
-    private void UpdateItemQuality(Item item)
-    {
-        switch (item.Name)
+        for (var i = 0; i < Items.Count; i++)
         {
-            case "Aged Brie":
+            if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
             {
-                if (item.Quality < 50)
+                if (Items[i].Quality > 0)
                 {
-                    item.Quality += 1;
+                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+                    {
+                        Items[i].Quality = Items[i].Quality - 1;
+                    }
+                }
+            }
+            else
+            {
+                if (Items[i].Quality < 50)
+                {
+                    Items[i].Quality = Items[i].Quality + 1;
+
+                    if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
+                    {
+                        if (Items[i].SellIn < 11)
+                        {
+                            if (Items[i].Quality < 50)
+                            {
+                                Items[i].Quality = Items[i].Quality + 1;
+                            }
+                        }
+
+                        if (Items[i].SellIn < 6)
+                        {
+                            if (Items[i].Quality < 50)
+                            {
+                                Items[i].Quality = Items[i].Quality + 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+            {
+                Items[i].SellIn = Items[i].SellIn - 1;
+            }
+
+            if (Items[i].SellIn < 0)
+            {
+                if (Items[i].Name != "Aged Brie")
+                {
+                    if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+                    {
+                        if (Items[i].Quality > 0)
+                        {
+                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+                            {
+                                Items[i].Quality = Items[i].Quality - 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Items[i].Quality = Items[i].Quality - Items[i].Quality;
+                    }
                 }
                 else
                 {
-                    if (item.Quality > 0)
-                        item.Quality -= 1;
+                    if (Items[i].Quality < 50)
+                    {
+                        Items[i].Quality = Items[i].Quality + 1;
+                    }
                 }
-
-                item.SellIn -= 1;
-
-                if (item.SellIn < 0 && item.Quality < 50)
-                {
-                    item.Quality += 1;
-                }
-
-                break;
-            }
-            case "Backstage passes to a TAFKAL80ETC concert":
-            {
-                if (item.Quality < 50)
-                {
-                    item.Quality += 1;
-                    if (item.SellIn < 11)
-                        if (item.Quality < 50)
-                            item.Quality += 1;
-
-                    if (item.SellIn < 6)
-                        if (item.Quality < 50)
-                            item.Quality += 1;
-                }
-
-                item.SellIn -= 1;
-
-                if (item.SellIn < 0)
-                    item.Quality = 0;
-                break;
-            }
-            case "Sulfuras, Hand of Ragnaros":
-                break;
-            default:
-            {
-                if (item.Quality > 0)
-                    item.Quality -= 1;
-
-                item.SellIn -= 1;
-
-                if (item.SellIn < 0 && item.Quality > 0)
-                {
-                    item.Quality -= 1;
-                }
-
-                break;
             }
         }
     }
